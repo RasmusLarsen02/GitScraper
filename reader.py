@@ -1,7 +1,8 @@
 import requests
 import matplotlib.pyplot as plt
 import re
-import numpy as np
+from flask import Flask, request, jsonify, send_file
+import os
 
 org = "ITU-DevOps2025-GROUP-A"
 repo = "itu-minitwit"
