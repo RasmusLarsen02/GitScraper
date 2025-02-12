@@ -4,6 +4,7 @@ import re
 from flask import Flask, request, jsonify, send_file
 import os
 
+app = Flask(__name__)
 
 
 def extract_time(time_string):
@@ -87,3 +88,5 @@ def generate_chart():
     chart_filename = draw_plot(titles, estimates, spent, repo)        
     return send_file(chart_filename, mimetype='image/png')
 
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)
