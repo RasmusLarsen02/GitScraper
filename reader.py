@@ -16,22 +16,28 @@ def extract_time(time_string):
 
         return hours, minutes
     
-def draw_plot(milestones, est, spt): 
+def draw_plot(milestones, est, spt, repo): 
     w = 0.4
-    x1 = [1]
+    x1 = [i for i in range(len(milestones))]
     x2 = [i+w for i in x1]
 
+    print(x1)
     plt.bar(x1, est, w, label = 'Estimated')
     plt.bar(x2, spt, w, label = 'Spent')
     plt.xlabel('Milestones')
     plt.ylabel('Hours')
-    plt.title('Time Chart')
+    plt.title(f'Time Chart for {repo}')
 
     plt.xticks([i+w/2 for i in x1], milestones)
 
     plt.legend()
-    plt.savefig("time_chart.png", dpi=300, bbox_inches="tight") 
-    plt.show()
+    
+    file = f"{repo}_time_chart.png"
+    plt.savefig(file, dpi=300, bbox_inches="tight") 
+    plt.close()
+    
+    return file
+
 
 @app.route('/generate-chart', methods=['GET'])
 def generate_chart(): 
