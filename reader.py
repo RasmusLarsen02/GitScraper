@@ -44,12 +44,19 @@ def generate_chart():
     org = request.args.get("org")
     repo = request.args.get("repo")
 
+    github_token = request.headers.get("Authorization")
+
+    if github_token and not github_token.startswith("token "):
+        github_token = f"token {github_token}"
+
     if not org or not repo:
         return jsonify({"error": "Missing organization or repository"}), 400
     
-    url = f"https://api.github.com/repos/{org}/{repo}/milestones"
+    url = f"https://api.github.com/repos/{org}/{repo}/milestones?state=all"
 
-    response = requests.get(url)
+    headers = {"Authorization": github_token} if github_token else {}
+
+    response = requests.get(url, headers=headers)
     
     if response.status_code != 200: 
         return jsonify({"error": "Failed to get milestones"}), 400
@@ -80,8 +87,8 @@ def generate_chart():
             timespent_index = body.find('Timespent')
             timeestimate_index = body.find('Time estimated')
             
-            spent_string = body[timespent_index:timespent_index+18]
-            estimated_string = body[timeestimate_index:timeestimate_index+20]
+            spent_string = body[timespent_index:timespent_index+20]
+            estimated_string = body[timeestimate_index:timeestimate_index+25]
             
             timespent_hours, timespent_minutes = extract_time(spent_string)
             estimated_hours, estimated_minutes = extract_time(estimated_string)
@@ -91,7 +98,8 @@ def generate_chart():
             
         spent.append(hours_s)  
         estimates.append(hours_e)  
-    chart_filename = draw_plot(titles, estimates, spent, repo)        
+    chart_filename = draw_plot(titles, estimates, spent, repo)  
+    
     return send_file(chart_filename, mimetype='image/png')
 
 if __name__ == "__main__":
