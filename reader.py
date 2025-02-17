@@ -4,8 +4,26 @@ import re
 from flask import Flask, request, jsonify, send_file
 import os
 
+
+
 app = Flask(__name__)
 
+BANNER = """
+==========================================
+  GIT SCRAPER CONTAINER STARTED!
+==========================================
+
+TO RUN, USE THIS COMMAND:
+
+curl -L \\
+    -H "Authorization: token <GITHUB_TOKEN>" \\
+    "http://<YOUR_IP>:8080/generate-chart?org={org}&repo={repo}" \\
+    -o chart.png
+
+==========================================
+"""
+
+print(BANNER)
 
 def extract_time(time_string):
         match = re.search(r"(\d+)h", time_string)
