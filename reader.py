@@ -70,7 +70,7 @@ def generate_chart():
     if not org or not repo:
         return jsonify({"error": "Missing organization or repository"}), 400
     
-    url = f"https://api.github.com/repos/{org}/{repo}/milestones?state=all"
+    url = f"https://api.github.com/repos/{org}/{repo}/milestones?state=all&sort=number"
 
     headers = {"Authorization": github_token} if github_token else {}
 
