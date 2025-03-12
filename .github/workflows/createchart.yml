@@ -23,8 +23,15 @@ jobs:
             "http://172.17.0.2:8080/generate-chart?org=ITU-DevOps2025-GROUP-A&repo=itu-minitwit" \
             -o timechart.png
 
-      - name: Upload chart as artifact
-        uses: actions/upload-artifact@v4
+      - name: Get current date for versioning
+        run: echo "RELEASE_TAG=$(date +'%Y-%m-%d-%H%M%S')" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: timechart
-          path: timechart.png
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: "Timechart Release - ${{ env.RELEASE_TAG }}"
+          body: "Automated release with the latest generated timechart."
+          files: timechart.png
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
