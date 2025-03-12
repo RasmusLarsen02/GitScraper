@@ -26,6 +26,9 @@ jobs:
             -H "Authorization: token ${{ secrets.FINE_TOKEN }}" \
             "http://localhost:8080/generate-chart?org=ITU-DevOps2025-GROUP-A&repo=itu-minitwit" \
             -o timechart.png
+            --write-out "%{http_code}\n" --silent --output /dev/null
+          file timechart.png
+          ls -lh timechart.png
 
       - name: Get current date for versioning
         run: echo "RELEASE_TAG=$(date +'%Y-%m-%d-%H%M%S')" >> $GITHUB_ENV
