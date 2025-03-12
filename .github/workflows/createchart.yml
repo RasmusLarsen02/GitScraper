@@ -2,6 +2,10 @@ name: Run GitScraper and Fetch Chart
 
 on:
  workflow_dispatch:
+
+permissions: 
+ contents: write
+ 
 jobs:
   run-gitscraper:
     runs-on: ubuntu-latest
