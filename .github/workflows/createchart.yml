@@ -17,18 +17,19 @@ jobs:
       - name: Pull and run GitScraper container
         run: |
           docker pull rasmusrlarsen/gitscraper:latest
-          docker run -d --name gitscraper --network=host rasmusrlarsen/gitscraper:latest
-          sleep 10
-
+          docker run -d --name gitscraper -p 5000:5000 rasmusrlarsen/gitscraper:latest
+          sleep 10  # Wait for the container to be fully ready
+      - name: Get Docker Container IP
+        run: |
+          CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' gitscraper)
+          echo "CONTAINER_IP=$CONTAINER_IP" >> $GITHUB_ENV
+          
       - name: Fetch chart
         run: |
           curl -L \
-            -H "Authorization: token ${{ secrets.FINE_TOKEN }}" \
-            "http://localhost:8080/generate-chart?org=ITU-DevOps2025-GROUP-A&repo=itu-minitwit" \
-            -o timechart.png \
-            --write-out "%{http_code}\n" --silent --output /dev/null
-          file timechart.png
-          ls -lh timechart.png
+            -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+            "http://${{ env.CONTAINER_IP }}:8080/generate-chart?org=ITU-DevOps2025-GROUP-A&repo=itu-minitwit" \
+            -o timechart.png
 
       - name: Get current date for versioning
         run: echo "RELEASE_TAG=$(date +'%Y-%m-%d-%H%M%S')" >> $GITHUB_ENV
