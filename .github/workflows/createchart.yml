@@ -19,7 +19,7 @@ jobs:
       - name: Fetch chart
         run: |
           curl -L \
-            -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+            -H "Authorization: token ${{ secrets.FINE_TOKEN }}" \
             "http://localhost:8080/generate-chart?org=ITU-DevOps2025-GROUP-A&repo=itu-minitwit" \
             -o timechart.png
 
