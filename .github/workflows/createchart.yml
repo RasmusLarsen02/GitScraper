@@ -18,14 +18,7 @@ jobs:
         run: |
           docker pull rasmusrlarsen/gitscraper:latest
           docker run gitscraper -p 8080:8080 rasmusrlarsen/gitscraper:latest
-
-      - name: Wait for container to be ready
-        run: |
-          until curl --silent --fail "http://localhost:8080"; do
-            echo "Waiting for GitScraper container to be ready..."
-            sleep 5
-          done
-          echo "GitScraper is ready!"
+          sleep 10
 
       - name: Fetch chart
         run: |
