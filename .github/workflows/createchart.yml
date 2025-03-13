@@ -28,11 +28,19 @@ jobs:
 
       - name: Fetch chart
         run: |
-          curl -L \
+          RESPONSE_HEADERS=$(mktemp)
+          curl -L -s -o timechart.png -D $RESPONSE_HEADERS \
             -H "Authorization: token ${{ secrets.FINE_TOKEN }}" \
-            "http://localhost:8080/generate-chart?org=ITU-DevOps2025-GROUP-A&repo=itu-minitwit" \
-            -o timechart.png
+            "http://localhost:8080/generate-chart?org=ITU-DevOps2025-GROUP-A&repo=itu-minitwit"
 
+          CONTENT_TYPE=$(grep -i "Content-Type:" $RESPONSE_HEADERS | awk '{print $2}' | tr -d '\r')
+
+          if [[ "$CONTENT_TYPE" != "image/png" ]]; then
+            echo "Error: The response is not an image. Possible API failure."
+            cat timechart.png  # Show what was saved for debugging
+            exit 1
+          fi
+          
       - name: Get current date for versioning
         run: echo "RELEASE_TAG=$(date +'%Y-%m-%d-%H%M%S')" >> $GITHUB_ENV
 
