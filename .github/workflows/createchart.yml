@@ -30,7 +30,7 @@ jobs:
         run: |
           RESPONSE_HEADERS=$(mktemp)
           curl -L -s -o timechart.png -D $RESPONSE_HEADERS \
-            -H "Authorization: token ${{ secrets.FINE_TOKEN }}" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "http://localhost:8080/generate-chart?org=ITU-DevOps2025-GROUP-A&repo=itu-minitwit"
 
           CONTENT_TYPE=$(grep -i "Content-Type:" $RESPONSE_HEADERS | awk '{print $2}' | tr -d '\r')
