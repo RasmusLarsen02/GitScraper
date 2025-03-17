@@ -58,7 +58,7 @@ jobs:
       - name: Extract Image URL & Update Release
         run: |
           RELEASE_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ env.RELEASE_TAG }}")
-      
+          RELEASE_ID=$(echo "$RELEASE_DATA" | jq -r '.id')
           IMAGE_URL=$(echo "$RELEASE_DATA" | jq -r '.assets[] | select(.name=="timechart.png") | .browser_download_url')
       
           if [[ -z "$IMAGE_URL" || "$IMAGE_URL" == "null" ]]; then
@@ -67,10 +67,10 @@ jobs:
           fi
       
           UPDATED_BODY="### Timechart Report\n\n![Timechart]($IMAGE_URL)"
-      
+          
           curl -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{\"body\": \"$UPDATED_BODY\"}" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ env.RELEASE_TAG }}"
+            "https://api.github.com/repos/RasmusLarsen02/GitScraper/releases/$RELEASE_ID"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
