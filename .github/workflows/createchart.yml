@@ -44,12 +44,32 @@ jobs:
       - name: Get current date for versioning
         run: echo "RELEASE_TAG=$(date +'%Y-%m-%d-%H%M%S')" >> $GITHUB_ENV
 
-      - name: Create GitHub Release
+      - name: Create GitHub Release & Upload Image
+        id: create_release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.RELEASE_TAG }}
           name: "Timechart Release - ${{ env.RELEASE_TAG }}"
-          body: "Automated release with the latest generated timechart."
+          body: "Generating timechart..."
           files: timechart.png
         env:
-          GITHUB_TOKEN: ${{ secrets.FINE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract Image URL & Update Release
+        run: |
+          ASSET_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ env.RELEASE_TAG }}" \
+            | jq -r '.assets[] | select(.name=="timechart.png") | .id')
+      
+          IMAGE_URL="https://github.com/${{ github.repository }}/releases/download/${{ env.RELEASE_TAG }}/timechart.png"
+      
+          UPDATED_BODY="# Timechart Report
+      
+          ![Timechart](${IMAGE_URL})"
+      
+          curl -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"body\": \"${UPDATED_BODY}\"}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/${{ env.RELEASE_TAG }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
